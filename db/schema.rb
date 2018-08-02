@@ -1443,4 +1443,10 @@ ActiveRecord::Schema.define(version: 20180801034341) do
         gamename = name;
     END
   SQL
+  execute <<-SQL
+    CREATE PROCEDURE listCompetitions()
+    BEGIN
+      SELECT name FROM tblcompetition;
+    END
+  SQL
 end
