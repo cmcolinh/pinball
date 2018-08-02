@@ -10,14 +10,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180217232523) do
+ActiveRecord::Schema.define(version: 20180801034341) do
 
   create_table "tblattributename", primary_key: "_key", id: :integer, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.string "attrname", limit: 40, null: false
     t.string "description", limit: 40, null: false
-    t.integer "playernotnull", limit: 1, null: false
-    t.integer "gamenotnull", limit: 1, null: false
-    t.integer "competitionnotnull", limit: 1, null: false
+    t.integer "playernotnull", limit: 1, default: 0, null: false
+    t.integer "gamenotnull", limit: 1, default: 0, null: false
+    t.integer "competitionnotnull", limit: 1, default: 0, null: false
     t.string "regex", limit: 10000, default: ".{1,40}", null: false
     t.index ["attrname", "playernotnull", "gamenotnull", "competitionnotnull"], name: "attributevalue_player_game_competition_notnull_uk", unique: true
   end
@@ -122,19 +122,6 @@ ActiveRecord::Schema.define(version: 20180217232523) do
     t.index ["_fk_competition"], name: "websitegenerator_to_competition_fk"
   end
 
-  create_table "tempScore", primary_key: "_key", id: :integer, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
-    t.integer "_fk_player"
-    t.integer "_fk_match"
-    t.integer "_fk_scoreset"
-    t.bigint "score"
-    t.integer "rank"
-    t.integer "points"
-    t.integer "session_id", null: false
-    t.index ["_fk_match"], name: "tempscore_to_match_fk"
-    t.index ["_fk_player"], name: "tempscore_to_player_fk"
-    t.index ["_fk_scoreset"], name: "tempscore_to_scoreset_fk"
-  end
-
   create_table "tempattributevalue", id: false, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.integer "_fk_player"
     t.integer "_fk_game"
@@ -148,6 +135,19 @@ ActiveRecord::Schema.define(version: 20180217232523) do
     t.index ["_fk_competition"], name: "tampattributevalue_to_competition_fk"
     t.index ["_fk_game"], name: "tempattributevalue_to_game_fk"
     t.index ["_fk_player"], name: "tempattributevalue_to_player_fk"
+  end
+
+  create_table "tempscore", primary_key: "_key", id: :integer, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+    t.integer "_fk_player"
+    t.integer "_fk_match"
+    t.integer "_fk_scoreset"
+    t.bigint "score"
+    t.integer "rank"
+    t.integer "points"
+    t.integer "session_id", null: false
+    t.index ["_fk_match"], name: "tempscore_to_match_fk"
+    t.index ["_fk_player"], name: "tempscore_to_player_fk"
+    t.index ["_fk_scoreset"], name: "tempscore_to_scoreset_fk"
   end
 
   add_foreign_key "tblattributevalue", "tblattributename", column: "_fk_attributename", primary_key: "_key", name: "attributevalue_to_attributename_fk"
@@ -167,13 +167,13 @@ ActiveRecord::Schema.define(version: 20180217232523) do
   add_foreign_key "tblscoreset", "tblplayer", column: "_fk_player", primary_key: "_key", name: "scoreset_to_player_fk"
   add_foreign_key "tblscoring", "tblscoringscheme", column: "_fk_scoringscheme", primary_key: "_key", name: "scoring_to_scoringscheme_fk"
   add_foreign_key "tblwebsitegenerator", "tblcompetition", column: "_fk_competition", primary_key: "_key", name: "websitegenerator_to_competition_fk"
-  add_foreign_key "tempScore", "tblmatch", column: "_fk_match", primary_key: "_key", name: "tempscore_to_match_fk"
-  add_foreign_key "tempScore", "tblplayer", column: "_fk_player", primary_key: "_key", name: "tempscore_to_player_fk"
-  add_foreign_key "tempScore", "tblscoreset", column: "_fk_scoreset", primary_key: "_key", name: "tempscore_to_scoreset_fk"
   add_foreign_key "tempattributevalue", "tblattributename", column: "_fk_attributename", primary_key: "_key", name: "tempattributevalue_to_attributename_fk"
   add_foreign_key "tempattributevalue", "tblcompetition", column: "_fk_competition", primary_key: "_key", name: "tampattributevalue_to_competition_fk"
   add_foreign_key "tempattributevalue", "tblgame", column: "_fk_game", primary_key: "_key", name: "tempattributevalue_to_game_fk"
   add_foreign_key "tempattributevalue", "tblplayer", column: "_fk_player", primary_key: "_key", name: "tempattributevalue_to_player_fk"
+  add_foreign_key "tempscore", "tblmatch", column: "_fk_match", primary_key: "_key", name: "tempscore_to_match_fk"
+  add_foreign_key "tempscore", "tblplayer", column: "_fk_player", primary_key: "_key", name: "tempscore_to_player_fk"
+  add_foreign_key "tempscore", "tblscoreset", column: "_fk_scoreset", primary_key: "_key", name: "tempscore_to_scoreset_fk"
     execute <<-SQL
       CREATE PROCEDURE addPlayer(
         IN playerName VARCHAR(40))
