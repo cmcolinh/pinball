@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180801034341) do
+ActiveRecord::Schema.define(version: 20180804120205) do
 
   create_table "tblattributename", primary_key: "_key", id: :integer, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.string "attrname", limit: 40, null: false
@@ -196,17 +196,19 @@ ActiveRecord::Schema.define(version: 20180801034341) do
       UPDATE tblplayer SET report = 0 WHERE name = playerName;
       END
     SQL
-    execute <<-SQL
-      CREATE PROCEDURE addGame(
-	IN name VARCHAR(40))
-      BEGIN
-        IF (gameNameExists(name) = 0)
-        THEN
-          INSERT INTO tblgame(gamename, ones)
-            SELECT name, 0;
-        END IF;
-      END
-    SQL
+  execute <<-SQL
+    CREATE FUNCTION addGame(
+      name VARCHAR(40)) RETURNS tinyint(1)
+    BEGIN
+      IF (gameNameExists(name) = 0)
+      THEN
+	  INSERT INTO tblgame(gamename)
+	    SELECT name;
+	  RETURN LAST_INSERT_ID();
+       END IF;
+      RETURN NULL;
+    END
+  SQL
     execute <<-SQL
       CREATE PROCEDURE getGameNamesInCompetition(
 	IN competitionNumber smallint)
