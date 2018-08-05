@@ -1,21 +1,23 @@
 class Competition
-  attr_accessor :id
   attr_accessor :name
   attr_accessor :basepath
 
   def self.generate(name, scoring_scheme)
     comp_id = ActiveRecord::Base.connection.invoke_function(:generateNewCompetition, name)
 
-    c          = self.new
-    c.id       = comp_id
-    c.name     = name
-    c.basepath = nil
-    c
+    create_new(name, comp_id)
+  end
+
+  def exist?(name)
+    ActiveRecord::Base.connection.invoke_function(:competitionNameExists, name).eql?(1)
   end
 
   def self.find_by_name(name)
     begin
-      ActiveRecord::Base.connection.invoke_function(:getCompetitionNumberForCompetition, self.name)
+      comp_id = ActiveRecord::Base.connection.invoke_function(
+        :getCompetitionNumberForCompetition, self.name)
+
+      create_new(name, comp_id)
     rescue StandardError < e
       nil
     end
@@ -29,6 +31,27 @@ class Competition
     if type.eql?(:random_matchup)
       ActiveRecord::Base.connection.invoke_function(:generateRandomMatchupTournament, self.id)
     end
+  end
+
+  def players
+    ActiveRecord::Base.connection.execute_procedure(
+      :getPlayerNamesInCompetition, @id)
+  end
+
+  def games
+    ActiveRecord::Base.connection.execute_
+
+  def enrollPlayer(player, seed)
+    ActiveRecord::Base.connection.execute_procedure(
+      :enrollPlayerToCompetition, player, @id, seed)
+  end
+
+  private
+  def self.create_new(name, id)
+    c      = self.new
+    c.@id  = id
+    c.name = name
+    c
   end
 end
 
