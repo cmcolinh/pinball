@@ -1,47 +1,47 @@
 class MigrationV001 < ActiveRecord::Migration[5.1]
   def up
-    create_table :tblcompetition, id: false do |t|
+    create_table :competition, id: false do |t|
       t.primary_key :_key, :integer
       t.string  :name,     limit: 100, null: false
       t.string  :basepath, limit: 100
       t.index   :name,     unique: true
     end
 
-    create_table :tblgame, id: false do |t|
+    create_table :game, id: false do |t|
       t.primary_key :_key, :integer
       t.string  :gamename, null: false, limit: 40
       t.integer :ones,     null: false, limit: 4
       t.index   :gamename, unique: true
     end
 
-    create_table :tblscoringscheme, id: false do |t|
+    create_table :scoringscheme, id: false do |t|
       t.primary_key :_key,    :integer
       t.string  :description, null: false, limit: 40
     end
 
-    create_table :tblmatch, id: false do |t|
+    create_table :match, id: false do |t|
       t.primary_key :_key,           :integer
       t.integer  :_fk_game,          null: false
       t.integer  :_fk_scoringscheme, null: false
     end
-    add_foreign_key :tblmatch, :tblgame,          column: :_fk_game, primary_key: :_key, name: 'match_to_game_fk'
-    add_foreign_key :tblmatch, :tblscoringscheme, column: :_fk_scoringscheme, primary_key: :_key, name: 'scoringscheme_to_match_fk'
+    add_foreign_key :match, :game,          column: :_fk_game, primary_key: :_key, name: 'match_to_game_fk'
+    add_foreign_key :match, :scoringscheme, column: :_fk_scoringscheme, primary_key: :_key, name: 'scoringscheme_to_match_fk'
 
-    create_table :tblplayer, id: false do |t|
+    create_table :player, id: false do |t|
       t.primary_key :_key,   :integer
       t.string      :name,   null: false, limit: 40
       t.integer     :report, null: false
     end
 
-    create_table :tblscoreset, id: false do |t|
+    create_table :scoreset, id: false do |t|
       t.primary_key :_key,        :integer
       t.integer  :_fk_player,      null: false
       t.integer  :_fk_competition, null: false
     end
-    add_foreign_key :tblscoreset, :tblplayer,      column: :_fk_player,      primary_key: :_key, name: 'scoreset_to_player_fk'
-    add_foreign_key :tblscoreset, :tblcompetition, column: :_fk_competition, primary_key: :_key, name: 'scoreset_to_competition_fk'
+    add_foreign_key :scoreset, :player,      column: :_fk_player,      primary_key: :_key, name: 'scoreset_to_player_fk'
+    add_foreign_key :scoreset, :competition, column: :_fk_competition, primary_key: :_key, name: 'scoreset_to_competition_fk'
 
-    create_table :tblscore, id: false do |t|
+    create_table :score, id: false do |t|
       t.primary_key :_key,     :integer
       t.integer :_fk_player,   null: false
       t.integer :_fk_match,    null: false
@@ -50,36 +50,36 @@ class MigrationV001 < ActiveRecord::Migration[5.1]
       t.integer :rank,                      limit: 6
       t.integer :points,                    limit: 4
     end
-    add_foreign_key :tblscore, :tblplayer,   column: :_fk_player,   primary_key: :_key,  name: 'score_to_player_fk'
-    add_foreign_key :tblscore, :tblmatch,    column: :_fk_match,    primary_key: :_key,  name: 'score_to_match_fk'
-    add_foreign_key :tblscore, :tblscoreset, column: :_fk_scoreset, primary_key: :_key,  name: 'score_to_scoreset_fk'
+    add_foreign_key :score, :player,   column: :_fk_player,   primary_key: :_key,  name: 'score_to_player_fk'
+    add_foreign_key :score, :match,    column: :_fk_match,    primary_key: :_key,  name: 'score_to_match_fk'
+    add_foreign_key :score, :scoreset, column: :_fk_scoreset, primary_key: :_key,  name: 'score_to_scoreset_fk'
 
-    create_table :tblscoring, id: false do |t|
+    create_table :scoring, id: false do |t|
       t.primary_key :_key,          :integer
       t.integer :_fk_scoringscheme, null: false
       t.integer :numplayers,        null: false
       t.integer :rank,              null: false
       t.integer :pointsforrank,     null: false
     end
-    add_foreign_key :tblscoring, :tblscoringscheme, column: :_fk_scoringscheme, primary_key: :_key, name: 'scoring_to_scoringscheme_fk'
+    add_foreign_key :scoring, :scoringscheme, column: :_fk_scoringscheme, primary_key: :_key, name: 'scoring_to_scoringscheme_fk'
 
-    create_table :tblbonusscoring, id: false do |t|
+    create_table :bonusscoring, id: false do |t|
       t.primary_key :_key,    :integer
       t.integer :_fk_scoring, null: false
       t.integer :bonuspoints, null: false
       t.string  :cond,        null: false, limit: 10000
     end
-    add_foreign_key :tblbonusscoring, :tblscoring, column: :_fk_scoring, primary_key: :_key, name: 'bonusscoring_to_scoring_fk'
+    add_foreign_key :bonusscoring, :scoring, column: :_fk_scoring, primary_key: :_key, name: 'bonusscoring_to_scoring_fk'
 
-    create_table :tblwebsitegenerator, id: false do |t|
+    create_table :websitegenerator, id: false do |t|
       t.primary_key :_key,        :integer
       t.integer :_fk_competition, null: false
       t.string :filename,         null: false, limit: 40
       t.string :filedef,          null: false, limit: 10000
     end
-    add_foreign_key :tblwebsitegenerator, :tblcompetition, column: :_fk_competition, primary_key: :_key, name: 'websitegenerator_to_competition_fk'
+    add_foreign_key :websitegenerator, :competition, column: :_fk_competition, primary_key: :_key, name: 'websitegenerator_to_competition_fk'
 
-    create_table :tblcompetitionenrollment, id: false do |t|
+    create_table :competitionenrollment, id: false do |t|
       t.primary_key :_key,        :integer
       t.integer :_fk_competition, null: false
       t.integer :_fk_player,      null: false
@@ -87,10 +87,10 @@ class MigrationV001 < ActiveRecord::Migration[5.1]
       t.integer :report,          null: false
       t.index   [:_fk_competition, :_fk_player], unique: true, name: 'competitionenrollment_competition_player_uk'
     end
-    add_foreign_key :tblcompetitionenrollment, :tblcompetition, column: :_fk_competition, primary_key: :_key, name: 'competitionenrollment_to_competition_fk'
-    add_foreign_key :tblcompetitionenrollment, :tblplayer, column: :_fk_player, primary_key: :_key, name: 'competitionenrollment_to_player_fk'
+    add_foreign_key :competitionenrollment, :competition, column: :_fk_competition, primary_key: :_key, name: 'competitionenrollment_to_competition_fk'
+    add_foreign_key :competitionenrollment, :player, column: :_fk_player, primary_key: :_key, name: 'competitionenrollment_to_player_fk'
 
-    create_table :tblcompetitionadvancementscript, id: false do |t|
+    create_table :competitionadvancementscript, id: false do |t|
       t.primary_key :_key,        :integer
       t.integer :_fk_competition, null: false
       t.integer :step,            null: false
@@ -98,9 +98,9 @@ class MigrationV001 < ActiveRecord::Migration[5.1]
       t.integer :active,          null: false, limit: 1
       t.index   [:_fk_competition, :step], unique: true, name: 'competionadvancementscript_competition_step_uk'
     end
-    add_foreign_key :tblcompetitionadvancementscript, :tblcompetition, column: :_fk_competition, primary_key: :_key, name: 'competitionadvancementscript_to_competition_fk'
+    add_foreign_key :competitionadvancementscript, :competition, column: :_fk_competition, primary_key: :_key, name: 'competitionadvancementscript_to_competition_fk'
 
-    create_table :tblattributename, id: false do |t|
+    create_table :attributename, id: false do |t|
       t.primary_key :_key,           :integer
       t.string  :attrname,           null: false, limit: 40
       t.string  :description,        null: false, limit: 40
@@ -111,7 +111,7 @@ class MigrationV001 < ActiveRecord::Migration[5.1]
       t.index [:attrname, :playernotnull, :gamenotnull, :competitionnotnull], unique: true, name: 'attributevalue_player_game_competition_notnull_uk'
     end
 
-    create_table :tblattributevalue, id: false do |t|
+    create_table :attributevalue, id: false do |t|
       t.primary_key :_key,    :integer
       t.integer  :_fk_player
       t.integer  :_fk_game
@@ -121,39 +121,52 @@ class MigrationV001 < ActiveRecord::Migration[5.1]
       t.datetime :startdate, null: false
       t.datetime :enddate, null: false, default: '9999-12-31 23:59:59'
     end
-    add_foreign_key :tblattributevalue, :tblattributename, column: :_fk_attributename, primary_key: :_key, name: 'attributevalue_to_attributename_fk'
-    add_foreign_key :tblattributevalue, :tblplayer, column: :_fk_player, primary_key: :_key, name: 'attributevalue_to_player_fk'
-    add_foreign_key :tblattributevalue, :tblgame, column: :_fk_game, primary_key: :_key, name: 'attributevalue_to_game_fk'
-    add_foreign_key :tblattributevalue, :tblcompetition, column: :_fk_competition, primary_key: :_key, name: 'attribute_value_to_competition_fk'
+    add_foreign_key :attributevalue, :attributename, column: :_fk_attributename, primary_key: :_key, name: 'attributevalue_to_attributename_fk'
+    add_foreign_key :attributevalue, :player, column: :_fk_player, primary_key: :_key, name: 'attributevalue_to_player_fk'
+    add_foreign_key :attributevalue, :game, column: :_fk_game, primary_key: :_key, name: 'attributevalue_to_game_fk'
+    add_foreign_key :attributevalue, :competition, column: :_fk_competition, primary_key: :_key, name: 'attribute_value_to_competition_fk'
 
-    create_table :tempScore, id: false do |t|
-      t.primary_key :_key,   :integer
-      t.integer :_fk_player
-      t.integer :_fk_match
-      t.integer :_fk_scoreset
-      t.bigint  :score
-      t.integer :rank
-      t.integer :points
-      t.integer :session_id,   null: false
-    end
-    add_foreign_key :tempScore, :tblplayer,   column: :_fk_player,   primary_key: :_key, name: 'tempscore_to_player_fk'
-    add_foreign_key :tempScore, :tblmatch,    column: :_fk_match,    primary_key: :_key, name: 'tempscore_to_match_fk'
-    add_foreign_key :tempScore, :tblscoreset, column: :_fk_scoreset, primary_key: :_key, name: 'tempscore_to_scoreset_fk'
+    execute <<-SQL
+      CREATE TABLE `tempattributevalue` (
+	 `_fk_player` INT(11) DEFAULT NULL,
+	 `_fk_game` INT(11) DEFAULT NULL,
+	 `_fk_competition` INT(11) DEFAULT NULL,
+	 `_fk_attributename` INT(11) NOT NULL,
+	 `attrvalue` VARCHAR(40) NOT NULL,
+	 `startdate` DATETIME NOT NULL,
+	 `enddate` DATETIME NOT NULL DEFAULT '9999-12-31 23:59:59',
+	 `session_id` INT(11) NOT NULL,
+	 KEY `attributevalue_to_attributename_fk` (`_fk_attributename`),
+        KEY `attribute_value_to_competition_fk` (`_fk_competition`),
+        KEY `attributevalue_to_game_fk` (`_fk_game`),
+        KEY `attributevalue_to_player_fk` (`_fk_player`),
+        CONSTRAINT `tempattributevalue_to_player_fk` FOREIGN KEY (`_fk_player`) REFERENCES `tblplayer` (`_key`),
+        CONSTRAINT `tempattributevalue_to_attributename_fk` FOREIGN KEY (`_fk_attributename`) REFERENCES `tblattributename` (`_key`),
+        CONSTRAINT `tempattributevalue_to_game_fk` FOREIGN KEY (`_fk_game`) REFERENCES `tblgame` (`_key`),
+	 CONSTRAINT `tempattribute_value_to_competition_fk` FOREIGN KEY (`_fk_competition`) REFERENCES `tblcompetition` (`_key`)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8
+    SQL
 
-    create_table :tempattributevalue, id: false do |t|
-      t.integer  :_fk_player
-      t.integer  :_fk_game
-      t.integer  :_fk_competition
-      t.integer  :_fk_attributename, null: false
-      t.string   :attrvalue,         null: false, limit: 41
-      t.datetime :startdate,         null: false
-      t.datetime :enddate,           null: false, default: '9999-12-31 23:59:59'
-      t.integer  :session_id,        null: false
-    end
-    add_foreign_key :tempattributevalue, :tblattributename, column: :_fk_attributename, primary_key: :_key, name: 'tempattributevalue_to_attributename_fk'
-    add_foreign_key :tempattributevalue, :tblplayer, column: :_fk_player, primary_key: :_key, name: 'tempattributevalue_to_player_fk'
-    add_foreign_key :tempattributevalue, :tblgame, column: :_fk_game, primary_key: :_key, name: 'tempattributevalue_to_game_fk'
-    add_foreign_key :tempattributevalue, :tblcompetition, column: :_fk_competition, primary_key: :_key, name: 'tampattributevalue_to_competition_fk'
+    execute <<-SQL
+      CREATE TABLE `tempScore` (
+        `_key` int(11) NOT NULL AUTO_INCREMENT,
+        `_fk_player` int(11) DEFAULT NULL,
+        `_fk_match` int(11) DEFAULT NULL,
+        `_fk_scoreset` int(11) DEFAULT NULL,
+        `score` bigint(20) DEFAULT NULL,
+	 `rank` int(11) DEFAULT NULL,
+        `points` int(11) DEFAULT NULL,
+        `session_id` int(11) NOT NULL,
+        PRIMARY KEY (`_key`),
+        KEY `tempscore_to_match_fk` (`_fk_match`),
+        KEY `tempscore_to_player_fk` (`_fk_player`),
+        KEY `tempscore_to_scoreset_fk` (`_fk_scoreset`),
+        CONSTRAINT `tempscore_to_scoreset_fk` FOREIGN KEY (`_fk_scoreset`) REFERENCES `tblscoreset` (`_key`),
+        CONSTRAINT `tempscore_to_match_fk` FOREIGN KEY (`_fk_match`) REFERENCES `tblmatch` (`_key`),
+        CONSTRAINT `tempscore_to_player_fk` FOREIGN KEY (`_fk_player`) REFERENCES `tblplayer` (`_key`)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8
+    SQL
+
     execute <<-SQL
       CREATE PROCEDURE addPlayer(
         IN playerName VARCHAR(40))
