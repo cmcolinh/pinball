@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180929021754) do
+ActiveRecord::Schema.define(version: 20181001032003) do
 
   create_table "attributename", primary_key: "_key", id: :integer, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.string "attrname", limit: 40, null: false
@@ -180,6 +180,16 @@ ActiveRecord::Schema.define(version: 20180929021754) do
       CONSTRAINT `tempscore_to_scoreset_fk` FOREIGN KEY (`_fk_scoreset`) REFERENCES `tblscoreset` (`_key`),
       CONSTRAINT `tempscore_to_match_fk` FOREIGN KEY (`_fk_match`) REFERENCES `tblmatch` (`_key`),
       CONSTRAINT `tempscore_to_player_fk` FOREIGN KEY (`_fk_player`) REFERENCES `tblplayer` (`_key`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8
+  SQL
+
+  execute <<-SQL
+    CREATE TABLE `randomtournamentmatchup` (
+      `matchNum` INT(11) NOT NULL,
+      `playerNum` INT(11) NOT NULL,
+      `numPlayers` INT(11) NOT NULL,
+      `numrounds` INT(11) NOT NULL,
+      UNIQUE KEY `randomtournamentmatchup_players_rounds_match` (`matchNum`, `playerNum`, `numPlayers`, `numrounds`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8
   SQL
 
